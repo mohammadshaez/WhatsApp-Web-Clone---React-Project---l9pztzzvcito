@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { Avatar, IconButton } from "@mui/material";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
@@ -9,15 +9,27 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import "./Sidebar.css";
 import SidebarChat from "./SidebarChat";
+import db from "../firebase";
 
 const Sidebar = () => {
-  const newchat = () => { alert("new chat")}
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    db.collection('rooms').onSnapshot(snapshot => {
+      setRooms(snapshot.docs.map((doc) => ({
+        id : doc.id,
+        data : doc.data(),
+      })))
+    })
+  }, [])
+
+  console.log(rooms)
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <Avatar src="https://api.dicebear.com/6.x/bottts/svg?seed=Felix"/>
 
-        <div className="sidebar-header-right">
+        <div className="sidebar-header-icons">
           <IconButton>
             <GroupsIcon />
           </IconButton>

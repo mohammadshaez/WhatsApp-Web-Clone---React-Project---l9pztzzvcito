@@ -5,7 +5,7 @@
 
 body {
   overflow: hidden;
-  
+  font-family: Helvetica;
 }
 .app {
   height: 100vh;
@@ -21,3 +21,4 @@ body {
   background-color: #ededed;
   display: flex;
 }
+

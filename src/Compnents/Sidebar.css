@@ -13,9 +13,8 @@
     background-color: #ededed;
 }
 
-.sidebar-header-right {
+.sidebar-header-icons {
     display: flex;
-    justify-content: flex-end;
     min-width: 10vw;
     gap: 10px;
 }

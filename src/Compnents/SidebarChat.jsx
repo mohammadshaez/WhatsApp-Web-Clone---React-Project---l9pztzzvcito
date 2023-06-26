@@ -8,7 +8,7 @@ const SidebarChat = ({ addNewChat }) => {
       <div className="chat-message">
         <Avatar src="https://api.dicebear.com/6.x/bottts/svg"/>
         <div className="sidebar-chat-info">
-          <h2>Senders Name</h2>
+          <h3>Senders Name</h3>
           <h5>Last Message</h5>
         </div>
       </div>
