@@ -9,25 +9,30 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import "./Sidebar.css";
 import SidebarChat from "./SidebarChat";
-import db from "../firebase";
+import db from '../firebase';
+// import db from '../config/firebase';
+// import firebase from 'firebase';
 
 const Sidebar = () => {
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
-    db.collection('rooms').onSnapshot(snapshot => {
-      setRooms(snapshot.docs.map((doc) => ({
-        id : doc.id,
-        data : doc.data(),
-      })))
-    })
-  }, [])
+    db.collection("rooms").onSnapshot((snapshot) => {
+      setRooms(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      );
+      console.log(snapshot)
+    });
+  }, []);
 
-  console.log(rooms)
+  console.log(rooms);
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <Avatar src="https://api.dicebear.com/6.x/bottts/svg?seed=Felix"/>
+        <Avatar src="https://api.dicebear.com/6.x/bottts/svg?seed=Felix" />
 
         <div className="sidebar-header-icons">
           <IconButton>
@@ -39,8 +44,7 @@ const Sidebar = () => {
           </IconButton>
 
           <IconButton>
-            <ChatIcon onClick={newchat}>
-            </ChatIcon>
+            <ChatIcon ></ChatIcon>
           </IconButton>
 
           <IconButton>
@@ -56,7 +60,7 @@ const Sidebar = () => {
         <FilterListIcon sx={{ marginLeft: "10px" }} />
       </div>
       <div className="sidebar-sidebar-chats">
-        <SidebarChat addNewChat/>
+        <SidebarChat addNewChat />
         <SidebarChat />
         <SidebarChat />
         <SidebarChat />
