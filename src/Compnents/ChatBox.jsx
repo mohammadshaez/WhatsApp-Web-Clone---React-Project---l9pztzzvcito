@@ -18,8 +18,15 @@ const ChatBox = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [{ user }] = useStateValue();
-  const randomNumber = useMemo(() => Math.floor(Math.random() * 30) + 1, [roomId]);
-  const imageUrl = useMemo(() => `https://xsgames.co/randomusers/assets/avatars/male/${randomNumber}.jpg`, [randomNumber]);
+  const randomNumber = useMemo(
+    () => Math.floor(Math.random() * 30) + 1,
+    [roomId]
+  );
+  const imageUrl = useMemo(
+    () =>
+      `https://xsgames.co/randomusers/assets/avatars/male/${randomNumber}.jpg`,
+    [randomNumber]
+  );
   useEffect(() => {
     if (roomId) {
       db.collection("rooms")
@@ -39,7 +46,6 @@ const ChatBox = () => {
   }, [roomId]);
 
   const sendMessage = (e) => {
-    e.preventDefault();
     db.collection("rooms").doc(roomId).collection("messages").add({
       name: user.displayName,
       message: input,
@@ -57,12 +63,22 @@ const ChatBox = () => {
     return "";
   }, [messages]);
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
+  const handleOnSubmit = (event) => {
+    event.preventDefault();
+  };
+
   return (
     <div className="chat-box">
       {/* Chat-box Header  */}
 
       <div className="chat-header">
-        <Avatar src={imageUrl}/>
+        <Avatar src={imageUrl} />
         <div className="chat-header-info">
           <h3>{roomName}</h3>
           <h5>{time}</h5>
@@ -83,22 +99,12 @@ const ChatBox = () => {
       {/* Chat Body */}
 
       <div className="chatbox-body">
-        <div className="chat-body">
-          <span className="avatar">
-            <Avatar src={imageUrl} />
-          </span>
-          <span className="chat-message-body">
-            <p className="chat-name">~Sender's Name </p>
-            <p className="chat-message">
-              Hello world
-              <span className="chat-time">12:00 am</span>
-            </p>
-          </span>
-        </div>
 
         {messages.map((message, index) => (
           <div className="chat-body" key={index}>
-            <span className="avatar"></span>
+            <span className="avatar">
+              {user.displayName !== message.name && <Avatar src={imageUrl} />}
+            </span>
             <span
               className={`chat-message-body ${
                 user.displayName === message.name && "chat-received"
@@ -127,16 +133,17 @@ const ChatBox = () => {
         <IconButton>
           <AttachFileIcon />
         </IconButton>
-        <form>
+        <form onSubmit={handleOnSubmit}>
           <input
             type="text"
             placeholder="Type a message"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyPress={handleKeyPress}
           />
         </form>
         {input ? (
-          <IconButton onClick={sendMessage}>
+          <IconButton type="submit" onClick={sendMessage}>
             <SendIcon />
           </IconButton>
         ) : (
