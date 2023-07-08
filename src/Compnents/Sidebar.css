@@ -1,7 +1,10 @@
 .sidebar {
     flex: .30;
     background-color: #fff;
-    border: 1px solid lightgrey;   
+    border: 1px solid lightgrey;
+    height: 95vh;
+    overflow: hidden;
+    flex-direction: column;
 }
 
 /* Header  */
@@ -55,8 +58,10 @@
 
 .sidebar-sidebar-chats {
     display: flex;
-    /* overflow: hidden; */
+    overflow-y: auto;
     flex-direction: column;
+    flex: 1;
+    height: 100%;
 }
 
 .sidebar-chat {
@@ -69,13 +74,14 @@
 .chat-message {
     display: flex;
     padding: 10px;
+    align-items: center;
     /* border: 1px solid black; */
 }
 
 .sidebar-chat-info {
     display: flex;
     flex-direction: column;
-    margin-left: 10px;
+    margin-left: 15px;
 }
 
 .sidebar-chat:hover {

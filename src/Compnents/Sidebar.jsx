@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { Avatar, IconButton } from "@mui/material";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import ChatIcon from "@mui/icons-material/Chat";
@@ -9,30 +8,39 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import "./Sidebar.css";
 import SidebarChat from "./SidebarChat";
-import db from '../firebase';
-// import db from '../config/firebase';
-// import firebase from 'firebase';
+import { db } from "../firebase";
+import { useStateValue } from "./StateProvider";
+import firebase from "firebase";
 
 const Sidebar = () => {
   const [rooms, setRooms] = useState([]);
+  const [{user}] = useStateValue();
 
+  // creating a collection 
+  // setting doc id to rooms
   useEffect(() => {
-    db.collection("rooms").onSnapshot((snapshot) => {
-      setRooms(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      );
-      console.log(snapshot)
-    });
-  }, []);
+    db.collection('rooms').onSnapshot(snapshot=> {
+      setRooms(snapshot.docs.map(doc=> ({
+        id: doc.id,
+        data : doc.data(),
+      })))
+    })
+  }, [])
+  
+  //adding new collection 
+  const createNewChat = () => {
+    const room = prompt("Create new chat");
+    if(room) {
+      db.collection('rooms').add({
+        name : room.toString(),
+      })
+    }
+  }
 
-  console.log(rooms);
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <Avatar src="https://api.dicebear.com/6.x/bottts/svg?seed=Felix" />
+        <Avatar src={user?.photoURL} onClick={e => firebase.auth().signOut()}/>
 
         <div className="sidebar-header-icons">
           <IconButton>
@@ -43,8 +51,8 @@ const Sidebar = () => {
             <DonutLargeIcon />
           </IconButton>
 
-          <IconButton>
-            <ChatIcon ></ChatIcon>
+          <IconButton onClick={createNewChat}>
+            <ChatIcon></ChatIcon>
           </IconButton>
 
           <IconButton>
@@ -60,15 +68,11 @@ const Sidebar = () => {
         <FilterListIcon sx={{ marginLeft: "10px" }} />
       </div>
       <div className="sidebar-sidebar-chats">
-        <SidebarChat addNewChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
-        <SidebarChat />
+        {
+          rooms.map(room => {
+            return <SidebarChat key={room.id} id={room.id} name={room.data.name} />
+          })
+        }
       </div>
     </div>
   );

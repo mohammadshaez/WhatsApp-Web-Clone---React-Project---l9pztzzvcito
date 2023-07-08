@@ -26,6 +26,7 @@
     height: 100vh;
     padding: 25px 10px;
     position: relative;
+    overflow: auto;
 }
 
 .chat-received {
@@ -97,4 +98,5 @@
     font-size: 1rem;
     border: none;
     outline: none;
+    width: 100%;
   }
