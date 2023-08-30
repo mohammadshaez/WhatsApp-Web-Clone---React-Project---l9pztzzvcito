@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import 'firebase/firestore';
 
 const SidebarChat = ({ id, name }) => {
+  const [lastMessage, setLastMessage] = useState("");
   const randomNumber = useMemo(
     () => Math.floor(Math.random() * 30) + 1,
     [id]
@@ -15,7 +16,7 @@ const SidebarChat = ({ id, name }) => {
       `https://xsgames.co/randomusers/assets/avatars/male/${randomNumber}.jpg`,
     [randomNumber]
   );
-  const [lastMessage, setLastMessage] = useState("");
+  
   useEffect(() => {
     db.collection("rooms")
       .doc(id)

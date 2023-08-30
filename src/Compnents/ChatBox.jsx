@@ -7,10 +7,13 @@ import TagFacesIcon from "@mui/icons-material/TagFaces";
 import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
 import "./ChatBox.css";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { useParams } from "react-router-dom";
 import firebase from "firebase";
 import { useStateValue } from "./StateProvider";
+import VideoCallIcon from "@mui/icons-material/VideoCall";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 const ChatBox = () => {
   const { roomId } = useParams();
@@ -18,6 +21,11 @@ const ChatBox = () => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [{ user }] = useStateValue();
+  // const [isEmojiPicker, setIsEmojiPicker] = useState(false);
+  // const [currentEmoji, setCurrentEmoji] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  // set images
   const randomNumber = useMemo(
     () => Math.floor(Math.random() * 30) + 1,
     [roomId]
@@ -27,6 +35,7 @@ const ChatBox = () => {
       `https://xsgames.co/randomusers/assets/avatars/male/${randomNumber}.jpg`,
     [randomNumber]
   );
+
   useEffect(() => {
     if (roomId) {
       db.collection("rooms")
@@ -48,7 +57,7 @@ const ChatBox = () => {
   const sendMessage = (e) => {
     db.collection("rooms").doc(roomId).collection("messages").add({
       name: user.displayName,
-      message: input,
+      message: input || selectedFile.name,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     });
     setInput("");
@@ -64,7 +73,7 @@ const ChatBox = () => {
   }, [messages]);
 
   const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       sendMessage();
     }
   };
@@ -73,6 +82,20 @@ const ChatBox = () => {
     event.preventDefault();
   };
 
+  const handleFile = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+  if (selectedFile) {
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(selectedFile.name);
+
+    fileRef.put(selectedFile).then(() => {
+      console.log("File uploaded successfully!");
+    });
+    sendMessage();
+    setSelectedFile(null)
+  }
+  console.log(selectedFile);
   return (
     <div className="chat-box">
       {/* Chat-box Header  */}
@@ -84,13 +107,24 @@ const ChatBox = () => {
           <h5>{time}</h5>
         </div>
         <div className="chat-header-icon">
+          <input
+            type="file"
+            id="fileInput"
+            style={{ display: "none" }}
+            onChange={handleFile}
+          />
+          <IconButton>
+            <VideoCallIcon />
+          </IconButton>
           <IconButton>
             <SearchIcon />
           </IconButton>
           <IconButton>
             <MoreVertIcon />
           </IconButton>
-          <IconButton>
+          <IconButton
+            onClick={() => document.getElementById("fileInput").click()}
+          >
             <AttachFileIcon />
           </IconButton>
         </div>
@@ -99,7 +133,6 @@ const ChatBox = () => {
       {/* Chat Body */}
 
       <div className="chatbox-body">
-
         {messages.map((message, index) => (
           <div className="chat-body" key={index}>
             <span className="avatar">
@@ -127,10 +160,24 @@ const ChatBox = () => {
       {/* Chat-box Footer */}
 
       <div className="chat-footer">
+        {/* <IconButton onClick={() => setIsEmojiPicker(!isEmojiPicker)}> */}
         <IconButton>
           <TagFacesIcon />
         </IconButton>
-        <IconButton>
+        {/* {isEmojiPicker && (
+          <div>
+            <Picker
+              data={data}
+              // previewPosition="none"
+              onEmojiSelect={(e) => {
+                setCurrentEmoji(e.native);
+                setIsEmojiPicker(!isEmojiPicker);
+              }}
+            />
+          </div>
+        )} */}
+
+        <IconButton onClick={() => document.getElementById("fileInput").click()}>
           <AttachFileIcon />
         </IconButton>
         <form onSubmit={handleOnSubmit}>

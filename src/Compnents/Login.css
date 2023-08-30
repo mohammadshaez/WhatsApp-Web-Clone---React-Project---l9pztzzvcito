@@ -24,9 +24,17 @@
     background-color: white;
     margin: 0 17%;
     border-radius: 5px;
-    height: 100vh;
+    /* height: 100vh; */
     padding: 50px 25px 0 35px;
     display: flex;
+}
+@media all and (max-width: 500px) {
+    .login-wrapper {
+        height: "auto";
+    }
+    .login-body {
+        flex-direction: column-reverse;
+    }
 }
 .login-content {
     flex : 60%;
