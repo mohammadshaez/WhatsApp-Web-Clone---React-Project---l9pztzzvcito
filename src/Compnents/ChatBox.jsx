@@ -12,8 +12,53 @@ import { useParams } from "react-router-dom";
 import firebase from "firebase";
 import { useStateValue } from "./StateProvider";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+// import data from "@emoji-mart/data";
+// import Picker from "@emoji-mart/react";
+import { Menu } from "@mui/base/Menu";
+import { MenuButton } from "@mui/base/MenuButton";
+import { MenuItem } from "@mui/base/MenuItem";
+import { Dropdown } from "@mui/base/Dropdown";
+import { styled } from "@mui/system";
+
+const StyledListbox = styled("ul")(
+  ({ theme }) => `
+  font-family: IBM Plex Sans, sans-serif;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  padding: 6px;
+  margin: 12px 0;
+  min-width: 200px;
+  overflow: auto;
+  outline: 0px;
+  background: #fff;
+  border: 1px solid #d0d7de;
+  color: #24292f;
+  box-shadow: 0px 4px 30px #d0d7de;
+  z-index: 1;
+  `
+);
+
+const StyledMenuItem = styled(MenuItem)(
+  ({ theme }) => `
+  list-style: none;
+  padding: 10px;
+  // border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  &:last-of-type {
+    border-bottom: none;
+  }
+  &:hover {
+    background-color: #FFEEF4;
+  }
+  `
+);
+
+const TriggerButton = styled(MenuButton)(
+  ({ theme }) => `
+  border: none
+  `
+);
 
 const ChatBox = () => {
   const { roomId } = useParams();
@@ -96,6 +141,21 @@ const ChatBox = () => {
     setSelectedFile(null)
   }
   console.log(selectedFile);
+
+  //dropdown
+  const handleMenuClick = (menuItem) => {
+    switch (menuItem) {
+      case "New Group":
+        // createNewChat();
+        console.log("working");
+        return;
+      case "Log Out":
+        // handleLogout();
+        return;
+      default:
+        alert("We are working on it !!!");
+    }
+  };
   return (
     <div className="chat-box">
       {/* Chat-box Header  */}
@@ -113,20 +173,37 @@ const ChatBox = () => {
             style={{ display: "none" }}
             onChange={handleFile}
           />
-          <IconButton>
-            <VideoCallIcon />
-          </IconButton>
-          <IconButton>
+          <IconButton onClick={() => alert("We are working on it !!!")}>
             <SearchIcon />
           </IconButton>
-          <IconButton>
-            <MoreVertIcon />
-          </IconButton>
-          <IconButton
-            onClick={() => document.getElementById("fileInput").click()}
-          >
-            <AttachFileIcon />
-          </IconButton>
+          <Dropdown>
+            <TriggerButton>
+              <IconButton>
+                <MoreVertIcon />
+              </IconButton>
+            </TriggerButton>  
+            <Menu
+              slots={{ listbox: StyledListbox }}
+            >
+              <StyledMenuItem onClick={() => handleMenuClick("Group Info")}>
+                Group Info
+              </StyledMenuItem>
+              <StyledMenuItem onClick={() => handleMenuClick("Select Messages")}>
+              Select Messages
+              </StyledMenuItem>
+              <StyledMenuItem
+                onClick={() => handleMenuClick("Mute Notifications")}
+              >
+                Mute Notifications
+              </StyledMenuItem>
+              <StyledMenuItem onClick={() => handleMenuClick("Clear Messages")}>
+              Clear Messages
+              </StyledMenuItem>
+              <StyledMenuItem onClick={() => handleMenuClick("Exit Group")}>
+              Exit Group
+              </StyledMenuItem>
+            </Menu>
+          </Dropdown>
         </div>
       </div>
 
