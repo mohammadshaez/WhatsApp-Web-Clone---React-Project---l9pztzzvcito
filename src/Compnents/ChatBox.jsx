@@ -99,12 +99,16 @@ const ChatBox = () => {
     }
   }, [roomId]);
 
+  //add collection
   const sendMessage = (e) => {
-    db.collection("rooms").doc(roomId).collection("messages").add({
-      name: user.displayName,
-      message: input || selectedFile.name,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    db.collection("rooms")
+      .doc(roomId)
+      .collection("messages")
+      .add({
+        name: user.displayName,
+        message: input || selectedFile.name,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
     setInput("");
   };
 
@@ -138,9 +142,9 @@ const ChatBox = () => {
       console.log("File uploaded successfully!");
     });
     sendMessage();
-    setSelectedFile(null)
+    setSelectedFile(null);
   }
-  console.log(selectedFile);
+  // console.log(selectedFile);
 
   //dropdown
   const handleMenuClick = (menuItem) => {
@@ -156,6 +160,12 @@ const ChatBox = () => {
         alert("We are working on it !!!");
     }
   };
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const handleSearch = () => {
+    setIsSearchActive(!isSearchActive);
+    setSearchInput("");
+  };
   return (
     <div className="chat-box">
       {/* Chat-box Header  */}
@@ -163,17 +173,24 @@ const ChatBox = () => {
       <div className="chat-header">
         <Avatar src={imageUrl} />
         <div className="chat-header-info">
-          <h3>{roomName}</h3>
+          <div className="chat-header-roomname">
+            <h3>{roomName}</h3>
+          </div>
           <h5>{time}</h5>
         </div>
         <div className="chat-header-icon">
-          <input
-            type="file"
-            id="fileInput"
-            style={{ display: "none" }}
-            onChange={handleFile}
-          />
-          <IconButton onClick={() => alert("We are working on it !!!")}>
+          {isSearchActive ? (
+            <div className="chat-header-search-wrapper">
+              <input
+                type="text"
+                value={searchInput}
+                placeholder="Search Message"
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="chat-header-search"
+              />
+            </div>
+          ) : null}
+          <IconButton onClick={handleSearch}>
             <SearchIcon />
           </IconButton>
           <Dropdown>
@@ -181,15 +198,17 @@ const ChatBox = () => {
               <IconButton>
                 <MoreVertIcon />
               </IconButton>
-            </TriggerButton>  
-            <Menu
-              slots={{ listbox: StyledListbox }}
-            >
+            </TriggerButton>
+
+            {/* Menu */}
+            <Menu slots={{ listbox: StyledListbox }}>
               <StyledMenuItem onClick={() => handleMenuClick("Group Info")}>
                 Group Info
               </StyledMenuItem>
-              <StyledMenuItem onClick={() => handleMenuClick("Select Messages")}>
-              Select Messages
+              <StyledMenuItem
+                onClick={() => handleMenuClick("Select Messages")}
+              >
+                Select Messages
               </StyledMenuItem>
               <StyledMenuItem
                 onClick={() => handleMenuClick("Mute Notifications")}
@@ -197,10 +216,10 @@ const ChatBox = () => {
                 Mute Notifications
               </StyledMenuItem>
               <StyledMenuItem onClick={() => handleMenuClick("Clear Messages")}>
-              Clear Messages
+                Clear Messages
               </StyledMenuItem>
               <StyledMenuItem onClick={() => handleMenuClick("Exit Group")}>
-              Exit Group
+                Exit Group
               </StyledMenuItem>
             </Menu>
           </Dropdown>
@@ -210,28 +229,32 @@ const ChatBox = () => {
       {/* Chat Body */}
 
       <div className="chatbox-body">
-        {messages.map((message, index) => (
-          <div className="chat-body" key={index}>
-            <span className="avatar">
-              {user.displayName !== message.name && <Avatar src={imageUrl} />}
-            </span>
-            <span
-              className={`chat-message-body ${
-                user.displayName === message.name && "chat-received"
-              }`}
-            >
-              <p className="chat-name">~{message.name}</p>
-              <p className="chat-message">
-                {message.message}{" "}
-                <span className="chat-time">
-                  {new Date(
-                    message.timestamp?.seconds * 1000
-                  ).toLocaleTimeString()}
-                </span>
-              </p>
-            </span>
-          </div>
-        ))}
+        {messages
+          .filter((message) =>
+            message.message.toLowerCase().includes(searchInput)
+          )
+          .map((message, index) => (
+            <div className="chat-body" key={index}>
+              <span className="avatar">
+                {user.displayName !== message.name && <Avatar src={imageUrl} />}
+              </span>
+              <span
+                className={`chat-message-body ${
+                  user.displayName === message.name && "chat-received"
+                }`}
+              >
+                <p className="chat-name">~{message.name}</p>
+                <p className="chat-message">
+                  {message.message}{" "}
+                  <span className="chat-time">
+                    {new Date(
+                      message.timestamp?.seconds * 1000
+                    ).toLocaleTimeString()}
+                  </span>
+                </p>
+              </span>
+            </div>
+          ))}
       </div>
 
       {/* Chat-box Footer */}
@@ -254,7 +277,9 @@ const ChatBox = () => {
           </div>
         )} */}
 
-        <IconButton onClick={() => document.getElementById("fileInput").click()}>
+        <IconButton
+          onClick={() => document.getElementById("fileInput").click()}
+        >
           <AttachFileIcon />
         </IconButton>
         <form onSubmit={handleOnSubmit}>
